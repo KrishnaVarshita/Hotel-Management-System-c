@@ -9,7 +9,7 @@ struct detail
     char address[50];
     char gender;
     int room, age;
-    char phone[15];
+    char phone[25];
 } x[200];
 
 struct staff
@@ -31,31 +31,49 @@ void deletee();
 void staff();
 void expense();
 
-int read()
-{
+int write() {
+    FILE *fp = fopen("details.txt", "w");
+    if (fp == NULL) {
+        printf("\t**Error opening file**");
+        exit(1);
+    }
+
+    for (int i = 0; i < num; i++) {
+        fprintf(fp, "Room No: %d\n", x[i].room);
+        fprintf(fp, "Name: %s\n", x[i].name);
+        fprintf(fp, "Email: %s\n", x[i].email);
+        fprintf(fp, "Gender: %c\n", x[i].gender);
+        fprintf(fp, "Address: %s\n", x[i].address);
+        fprintf(fp, "Phone: %s\n", x[i].phone);
+        fprintf(fp, "Age: %d\n", x[i].age);
+        fprintf(fp, "---------------------------------\n");
+    }
+
+    fclose(fp);
+    return 0;
+}
+
+int read() {
     FILE *fp = fopen("details.txt", "r");
-    if (fp == NULL)
-    {
-        fp = fopen("details.txt", "w");
-        fclose(fp);
+    if (fp == NULL) {
         printf("\tNo file found!! Creating new...\n\n");
         return 0;
     }
 
-    num = fread(x, sizeof(struct detail), 100, fp);
-    fclose(fp);
-}
-int write()
-{
-    FILE *fp = fopen("details.txt", "w");
-    if (fp == NULL)
-    {
-        printf("\t**error**");
-        exit(1);
+    num = 0;
+    while (fscanf(fp, "Room No: %d\n", &x[num].room) != EOF) {
+        fgets(x[num].name, 30, fp);
+        fgets(x[num].email, 30, fp);
+        fscanf(fp, "Gender: %c\n", &x[num].gender);
+        fgets(x[num].address, 50, fp);
+        fgets(x[num].phone, 15, fp);
+        fscanf(fp, "Age: %d\n", &x[num].age);
+        fscanf(fp, "---------------------------------\n");
+        num++;
     }
-    fwrite(x, sizeof(struct detail), num, fp);
 
     fclose(fp);
+    return 0;
 }
 
 
